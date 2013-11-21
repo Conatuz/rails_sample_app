@@ -22,6 +22,10 @@ group :development, :test do
   gem 'spork', '0.9.2'
 end
 
+group :development do
+  gem 'annotate', '2.5.0'
+end
+
 
 
 # Gems used only for assets and not required
