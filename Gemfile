@@ -5,6 +5,12 @@ gem 'rails', '3.2.13'
 gem 'bootstrap-sass', '2.1'
 # password encryption
 gem 'bcrypt-ruby', '3.0.1'
+# faker to add sample users
+gem 'faker', '1.0.1'
+# Pagination
+gem 'will_paginate', '3.0.3'
+# Use with bootstrap
+gem 'bootstrap-will_paginate', '0.0.6'
 
 # Switch to Postgre
 #gem 'pg', '0.12.2'
