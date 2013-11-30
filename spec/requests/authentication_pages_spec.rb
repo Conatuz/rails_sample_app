@@ -9,6 +9,8 @@ describe "Authentication" do
     
     it { should have_selector('h1',     text: 'Sign in') }
     it { should have_selector('title',  text: 'Sign in') }
+    it { should_not have_link('Profile') }
+    it { should_not have_link('Settings') }
     
     describe "with invalid information" do
       before { click_button "Sign in" }
@@ -77,16 +79,29 @@ describe "Authentication" do
         
         before do
           visit edit_user_path(user)
+          # should redirect to sign-in page, so:
           fill_in "Email",    with: user.email
           fill_in "Password", with: user.password
           click_button "Sign in"
         end
         
         describe "after signing in" do
+          
           it "should render the desired protected page" do
             page.should have_selector('title', text: 'Edit user')
           end
-        end
+          
+          describe "when signing in again" do
+            before do
+              delete signout_path
+              sign_in user
+            end
+            it "should render the default (profile) page" do
+              page.should have_selector('title', text: user.name)
+            end
+          end
+          
+        end  # end of sign-in
         
       end  # end of protected page
             
@@ -120,6 +135,36 @@ describe "Authentication" do
         specify { response.should redirect_to(root_url) }
       end
     end
+    
+    describe "for signed-in users" do
+      let(:user) { FactoryGirl.create(:user) }
+      before { sign_in user }
+      
+      describe "when visiting sign-up page" do
+        before { visit signup_path }
+        it { should have_root_header }
+      end
+      
+      describe "submitting to the update action"  do
+        before { post users_path }
+        specify { request.should redirect_to(root_path) }
+      end
+      
+    end  # end of signed-in users
+    
+    describe "as admin user" do
+      let(:admin) { FactoryGirl.create(:admin) }
+      before { sign_in admin }
+      
+      describe "submitting a DELETE request to the current admin" do
+        #before { delete user_path(admin) }
+        #specify { response.should redirect_to(root_url) }
+        it "should not delete an admin" do
+          expect { delete user_path(admin) }.not_to change(User, :count)
+        end
+      end
+      
+    end  # end of admin user
     
   end  # end of authorisation
   

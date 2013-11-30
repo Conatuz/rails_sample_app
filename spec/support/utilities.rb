@@ -21,6 +21,12 @@ RSpec::Matchers.define :have_success_message do |message|
   end
 end
 
+RSpec::Matchers.define :have_root_header do
+  match do |page|
+    page.should have_selector('h1', text: 'Sample App')
+  end
+end
+
 # Included by ApplicationHelper now
 #def full_title(page_title)
 #  base_title = "Sample App"
