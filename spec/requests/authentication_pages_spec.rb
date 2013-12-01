@@ -156,7 +156,7 @@ describe "Authentication" do
       
       describe "when visiting sign-up page" do
         before { visit signup_path }
-        it { should have_root_header }
+        it { should have_in_root_header(user) }
       end
       
       describe "submitting to the update action"  do

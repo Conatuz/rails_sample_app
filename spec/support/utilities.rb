@@ -21,9 +21,17 @@ RSpec::Matchers.define :have_success_message do |message|
   end
 end
 
-RSpec::Matchers.define :have_root_header do
+# Signed out
+RSpec::Matchers.define :have_out_root_header do
   match do |page|
     page.should have_selector('h1', text: 'Sample App')
+  end
+end
+
+# Signed in
+RSpec::Matchers.define :have_in_root_header do |user|
+  match do |page|
+    page.should have_selector('h1', text: user.name)
   end
 end
 

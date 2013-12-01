@@ -27,6 +27,10 @@ class User < ActiveRecord::Base
   validates :password_confirmation, presence: true
   after_validation { self.errors.messages.delete(:password_digest) }
   
+  def feed
+    # temp
+    Micropost.where("user_id = ?", id)
+  end
   
   private
   
