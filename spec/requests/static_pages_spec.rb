@@ -56,17 +56,66 @@ describe "Static Pages" do
     describe "for signed-in users" do
       let(:user) { FactoryGirl.create(:user) }
       before do
-        FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
-        FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
         sign_in user
         visit root_path
       end
       
-      it "should render the user's feed" do
-        user.feed.each do |item|
-          page.should have_selector("li##{item.id}", text: item.content)
+      describe "user feed" do
+        before do
+          FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
+          FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
+          visit root_path
         end
-      end
+        it "should render the user's posts" do
+          user.feed.each do |item|
+            page.should have_selector("li##{item.id}", text: item.content)
+          end
+        end
+        
+        describe "pagination" do
+          before(:all)  { 35.times { FactoryGirl.create(:micropost, user: user) } }
+          after(:all)   { Micropost.delete_all }
+          
+          it { should have_selector('div.pagination') }
+      
+          it "should list first page" do
+            Micropost.paginate(page: 1).each do |post|
+              page.should have_selector('li', text: post.content)
+            end
+          end
+          it "should not list second page" do
+            Micropost.paginate(page: 2).each do |post|
+              page.should_not have_selector('li', text: post.content)
+            end
+          end
+          
+        end
+        
+      end  # end of user feed
+         
+      describe "sidebar micropost counter" do
+        
+        describe "when no posts" do
+          it { should have_content('0 microposts') }
+        end
+        describe "when 1 post" do
+          before do
+            FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
+            visit root_path
+          end
+          it { should have_content('1 micropost') }
+          it { should_not have_content('1 microposts') }
+        end
+        describe "when 2 posts" do
+          before do
+            FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
+            FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
+            visit root_path
+          end
+          it { should have_content('2 microposts') }
+        end
+      end  # end of micropost counter
+      
     end  # end of signed-in users
     
   end  # end of Home page
