@@ -18,7 +18,7 @@ describe "User Pages" do
     
     describe "pagination" do
       
-      before(:all)  { 30.times { FactoryGirl.create(:user) } }
+      before(:all)  { 30.times{ FactoryGirl.create(:user) } }
       after(:all)   { User.delete_all }
       
       it { should have_selector('div.pagination') }
@@ -50,7 +50,7 @@ describe "User Pages" do
       end
     end
 
-  end
+  end  # end of index
   
   describe "signup page" do
     before { visit signup_path }
@@ -166,7 +166,7 @@ describe "User Pages" do
         it { should have_link('Sign out') }        
       end
     end
-  end
+  end  # end of sign-up
   
   describe "profile page" do
     let(:user) { FactoryGirl.create(:user) }
@@ -182,6 +182,25 @@ describe "User Pages" do
       it { should have_content(m1.content) }
       it { should have_content(m2.content) }
       it { should have_content(user.microposts.count) }
+    end
+    
+    describe "for other user" do
+      let(:user2) { FactoryGirl.create(:user) }
+      before do
+        sign_in user2
+        visit user_path(user)
+      end
+      
+      it { should_not have_link('delete') }
+    end
+    
+    describe "for current user" do
+      before do
+        sign_in user
+        visit user_path(user)
+      end
+      
+      it { should have_link('delete') }
     end
   end
   
